@@ -40,6 +40,5 @@ while (rounds<=5){
     playRound(getHumanChoice(),getComputerChoice())
 
 }
-
 console.log(`Human Score: ${humanScore}`)
 console.log(`Computer Score: ${computerScore}`)
