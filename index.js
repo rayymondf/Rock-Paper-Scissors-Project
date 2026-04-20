@@ -73,6 +73,35 @@ function createGameUI() {
       text-align: center;
       font-weight: 600;
     }
+    .move-panel {
+      margin-bottom: 1rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .move-label {
+      color: #475569;
+      font-weight: 600;
+    }
+    .move-value {
+      min-width: 8.5rem;
+      text-align: center;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 999px;
+      padding: 0.45rem 0.9rem;
+      font-weight: 700;
+    }
+    .move-value.waiting {
+      background: #e2e8f0;
+      color: #475569;
+    }
     .results {
       min-height: 3rem;
       background: #f8fafc;
@@ -130,6 +159,20 @@ function createGameUI() {
 
   score.append(humanScoreBox, computerScoreBox);
 
+  const movePanel = document.createElement("div");
+  movePanel.classList.add("move-panel");
+
+  const moveLabel = document.createElement("span");
+  moveLabel.classList.add("move-label");
+  moveLabel.textContent = "Computer played";
+
+  const moveValue = document.createElement("span");
+  moveValue.classList.add("move-value", "waiting");
+  moveValue.id = "computer-move";
+  moveValue.textContent = "Waiting...";
+
+  movePanel.append(moveLabel, moveValue);
+
   const results = document.createElement("div");
   results.classList.add("results");
   results.id = "results";
@@ -159,7 +202,7 @@ function createGameUI() {
     controls.appendChild(btn);
   });
 
-  app.append(title, subtitle, controls, score, results, winner, resetWrap);
+  app.append(title, subtitle, controls, score, movePanel, results, winner, resetWrap);
   document.body.appendChild(app);
 }
 
@@ -195,7 +238,7 @@ function handleHumanTurn(humanChoice) {
   const computerChoice = getComputerChoice();
   const message = playRound(humanChoice, computerChoice);
 
-  updateUI(message);
+  updateUI(message, computerChoice);
 
   if (isGameOver()) {
     announceWinner();
@@ -209,14 +252,22 @@ function isGameOver() {
   );
 }
 
-function updateUI(roundMessage) {
+function formatChoice(choice) {
+  if (!choice) return "Waiting...";
+  return choice[0].toUpperCase() + choice.slice(1);
+}
+
+function updateUI(roundMessage, computerChoice = "") {
   const results = document.querySelector("#results");
   const humanScore = document.querySelector("#human-score");
   const computerScore = document.querySelector("#computer-score");
+  const computerMove = document.querySelector("#computer-move");
 
   results.textContent = roundMessage;
   humanScore.textContent = `You: ${gameState.humanScore}`;
   computerScore.textContent = `Computer: ${gameState.computerScore}`;
+  computerMove.textContent = formatChoice(computerChoice);
+  computerMove.classList.toggle("waiting", !computerChoice);
 }
 
 function announceWinner() {
